@@ -3,7 +3,6 @@ import re
 from random import shuffle
 from glob import glob
 from tqdm import tqdm
-from bs4 import BeautifulSoup
 
 import tensorflow as tf
 from tensorflow import keras
