@@ -47,7 +47,7 @@ def build_dataset(filenames, config=None):
     for p in tqdm(filenames):
         with open(p, 'r', encoding='utf-8') as f:
             texts = f.readlines()
-             # Remove redundant whitespaces(noise),
+            # Remove redundant whitespaces(noise),
             # convert to lowercase,
             # and filter out zero length input sentences.
             texts = [' '.join(t.split()).lower() for t in texts if t]
