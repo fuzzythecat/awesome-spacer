@@ -5,7 +5,7 @@ class Config(object):
     # Maximum number of characters per sentence.
     MAX_TEXT_LEN = 200
 
-    # Dimension of the dense embedding.
+    # Dimension of the dense word embedding.
     EMBEDDING_DIM = 64
 
     # Determines N in N-grams.
@@ -39,6 +39,12 @@ class Config(object):
     # Numbers, punctuations, etc.
     NUMBERS = '0123456789'
     PUNCTUATIONS = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~'
+    # Default tokens used. 
+    # '<PAD>': Added before or after each line.
+    # '<START>': Added before start of every line.
+    # '<UNK>': Replaces OOV characters. 
+    # To add custom tokens, custom `get_label` function
+    # must also be provided in `utily.py`. 
     TOKENS = ['<PAD>',
               '<START>',
               '<UNK>']
