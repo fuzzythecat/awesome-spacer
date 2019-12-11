@@ -95,7 +95,7 @@ def Spacer(weights=None,
                                  config.FILTER_SIZES)
 
     x = layers.Concatenate()(conv_blocks)
-    x = layers.LSTM(100, dropout=0.3, return_sequences=True)(x)
+    x = layers.Bidirectional(layers.LSTM(100, dropout=0.3, return_sequences=True))(x)
     x = layers.LSTM(50, dropout=0.1, return_sequences=True)(x)
 
     x = layers.TimeDistributed(layers.Dense(300, activation='relu'))(x)
