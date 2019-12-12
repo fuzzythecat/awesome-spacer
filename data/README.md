@@ -11,7 +11,7 @@ reduce training time without hurting the performance.
 50,000 lines were randomly selected from the corpus(152 characters per line) for training, 
 and the same lines were stretched to 100,000(76 characters per line) for comparison.  
 
-![](../images/20191211_comapre_preprocessing_performance.png)
+![](../images/20191211_compare_preprocessing_performance.png)
 
 Two models with the default configuration were trained on each dataset, and the former showed comparable 
 performance on separate validation set after 10 epochs as the latter, with just half the training time.  
