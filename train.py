@@ -18,7 +18,7 @@ def str2bool(v):
 parser = argparse.ArgumentParser()
 # Training configurations
 parser.add_argument('--gpu_list', type=str, default='0')
-parser.add_argument('--trained_model', type=str, default='')
+parser.add_argument('--trained_model', type=str, default=None)
 #parser.add_argument('--logs', type=str, default='./logs')
 
 # Data configurations
