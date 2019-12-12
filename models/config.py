@@ -25,11 +25,8 @@ class Config(object):
     # Learning rate and momentum.
     # Set learning rate to lower values
     # for transfer learning.
+    # Adam is used as default.
     LEARNING_RATE = 0.001
-    LEARNING_MOMENTUM = 0.9
-
-    # Weight decay regularization.
-    WEIGHT_DECAY = 0.0001
 
     # Unicode ranges for characters in general.
     COMPLETE_KOR_RANGE = range(0xac00, 0xd7a4)

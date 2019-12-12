@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from glob import glob
 from random import shuffle
+from tensorflow.keras import optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 from models.config import Config
@@ -60,10 +61,14 @@ if __name__ == '__main__':
     
     # Model loading
     model = Spacer(FLAGS.trained_model,
-                   config) 
+                   config)
+
+    optimizer = optimizers.Adam(
+            config.LEARNING_RATE,
+            False)
 
     model.compile(loss='binary_crossentropy',
-                  optimizer='adam',
+                  optimizer=optimizer,
                   metrics=['accuracy',
                            tf.metrics.Precision(),
                            tf.metrics.Recall(),
