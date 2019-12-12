@@ -105,5 +105,8 @@ def Spacer(weights=None,
     x = layers.Reshape(input_shape)(x)
 
     model = models.Model(inputs, x)
+
+    if weights is not None:
+        model.load_weights(weights)
  
     return model

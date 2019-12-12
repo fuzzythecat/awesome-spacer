@@ -78,8 +78,11 @@ if __name__ == '__main__':
     model_path = os.path.join(MODEL_SAVE_DIR,
             '{epoch:02d}-{val_loss:.4f}-{val_accuracy:.4f}.hdf5')
     
-    checkpoint = ModelCheckpoint(filepath=model_path, monitor='val_loss',
-                                 verbose=1, save_best_only=True)
+    checkpoint = ModelCheckpoint(filepath=model_path, 
+                                 monitor='val_loss',
+                                 verbose=1,
+                                 save_weights_only=True,
+                                 save_best_only=True)
 
     history = model.fit(X_train, y_train,
                         validation_data=(X_val, y_val),
