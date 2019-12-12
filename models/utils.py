@@ -31,7 +31,7 @@ def get_label(s, idx=0):
             # End of sentence
             label.append(0)
             break
-        if next_ch == ' ':
+        if s[idx] == ' ':
             label.append(1)
             idx += 2
         else:
@@ -72,3 +72,12 @@ def build_dataset(filenames, config=None):
                       value=0)
     
     return (X, y)
+
+
+def add_string(s): 
+    i = 1
+    while i < len(s):
+        if len(s[i-1]) + len(s[i]) < 200:
+            s[i-1] += f' {s.pop(i)}'
+        else:
+            i+=1
