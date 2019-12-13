@@ -34,6 +34,38 @@ config = Config()
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu_list
    
+    # Model loading
+    gpu_nums = len(FLAGS.gpu_list.split(','))
+    if gpu_nums > 1:
+        # Multi-GPU training.
+        mirrored_strategy = tf.distribute.MirroredStrategy()
+        with mirrored_strategy.scope():
+            model = Spacer(FLAGS.trained_model,
+                           config)
+            optimizer = optimizers.Adam(
+                    config.LEARNING_RATE,
+                    False)
+            model.compile(loss='binary_crossentropy',
+                  optimizer=optimizer,
+                  metrics=['accuracy',
+                           tf.metrics.Precision(),
+                           tf.metrics.Recall(),
+                           tf.metrics.AUC()])
+    else:
+        # Single GPU training.
+        model = Spacer(FLAGS.trained_model,
+                       config) 
+        optimizer = optimizers.Adam(
+                config.LEARNING_RATE,
+                False)
+        model.compile(loss='binary_crossentropy',
+                      optimizer=optimizer,
+                      metrics=['accuracy',
+                               tf.metrics.Precision(),
+                               tf.metrics.Recall(),
+                               tf.metrics.AUC()])
+    model.summary()
+
     # Data preparation
     filenames = glob(os.path.join(FLAGS.data_path, '*.txt'))
     shuffle(filenames)
@@ -49,33 +81,16 @@ if __name__ == '__main__':
     X_train, y_train = build_dataset(train_filenames, config) 
     print('Preparing validation dataset.')
     X_val, y_val = build_dataset(val_filenames, config)
-
+ 
+    global_batch_size = config.BATCH_SIZE * gpu_nums
     train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train))
-    train_dataset = train_dataset.shuffle(1024)
-    train_dataset = train_dataset.batch(config.BATCH_SIZE)
+    train_dataset = train_dataset.batch(global_batch_size)
     train_dataset = train_dataset.repeat()
 
     valid_dataset = tf.data.Dataset.from_tensor_slices((X_val, y_val))
-    valid_dataset = valid_dataset.batch(config.BATCH_SIZE)
+    valid_dataset = valid_dataset.batch(global_batch_size)
     valid_dataset = valid_dataset.repeat()
     
-    # Model loading
-    model = Spacer(FLAGS.trained_model,
-                   config)
-
-    optimizer = optimizers.Adam(
-            config.LEARNING_RATE,
-            False)
-
-    model.compile(loss='binary_crossentropy',
-                  optimizer=optimizer,
-                  metrics=['accuracy',
-                           tf.metrics.Precision(),
-                           tf.metrics.Recall(),
-                           tf.metrics.AUC()])
-
-    model.summary()
-
     MODEL_SAVE_DIR = 'outputs/'
     if not os.path.exists(MODEL_SAVE_DIR):
         os.mkdir(MODEL_SAVE_DIR)
@@ -89,9 +104,10 @@ if __name__ == '__main__':
                                  save_weights_only=True,
                                  save_best_only=True)
 
-    history = model.fit(X_train, y_train,
-                        validation_data=(X_val, y_val),
+    history = model.fit(train_dataset,
+                        validation_data=valid_dataset,
                         epochs=config.EPOCHS,
-                        batch_size=config.BATCH_SIZE,
+                        steps_per_epoch=len(X_train)//global_batch_size,
+                        validation_steps=len(X_val)//global_batch_size,
                         callbacks=[checkpoint],
                         verbose=1)
