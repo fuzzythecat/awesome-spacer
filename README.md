@@ -11,7 +11,7 @@ awesome-spacer is a project for automatic Korean word spacing, using **TensorFlo
 
 ## Train
 
-To train the model, you should provide path to the dataset.
+To train the model, you should provide the path to your dataset.
 You can import this module and train in Jupyter Notebook(see notebooks for example), 
 or train from CLI. 
 
