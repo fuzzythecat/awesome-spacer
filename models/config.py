@@ -22,11 +22,14 @@ class Config(object):
     BATCH_SIZE = 256
     EPOCHS = 30
     
-    # Learning rate and momentum.
+    # Learning rate and hyperparameters for
+    # learning rate schedule.
     # Set learning rate to lower values
     # for transfer learning.
     # Adam is used as default.
     LEARNING_RATE = 0.001
+    DECAY_STEPS = 100000
+    DECAY_RATE = 0.96
 
     # Unicode ranges for characters in general.
     COMPLETE_KOR_RANGE = range(0xac00, 0xd7a4)

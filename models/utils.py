@@ -1,7 +1,11 @@
 from tqdm import tqdm
+from tensorflow import metrics
 from tensorflow.keras import layers
 from tensorflow.keras import models
+from tensorflow.keras import optimizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+from models.spacer import Spacer
 
 
 def encode_string(s, chr_to_idx):
@@ -65,3 +69,24 @@ def build_dataset(filenames, config=None):
                       value=0)
     
     return (X, y)
+
+
+def build_model(weights=None, config=None):
+    '''Returns a compiled model.'''
+    model = Spacer(weights, config)
+
+    lr_schedule = optimizers.schedules.ExponentialDecay(
+            config.LEARNING_RATE,
+            decay_steps=config.DECAY_STEPS,
+            decay_rate=config.DECAY_RATE,
+            staircase=True)
+    optimizer = optimizers.Adam(lr_schedule, False)
+
+    model.compile(loss='binary_crossentropy',
+                  optimizer=optimizer,
+                  metrics=['accuracy',
+                           metrics.Precision(),
+                           metrics.Recall(),
+                           metrics.AUC()])
+
+    return model

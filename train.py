@@ -4,13 +4,13 @@ import argparse
 import tensorflow as tf
 
 from glob import glob
-from random import shuffle
-from tensorflow.keras import optimizers
 from tensorflow.keras.callbacks import ModelCheckpoint
+from sklearn.model_selection import train_test_split
 
 from models.config import Config
 from models.utils import build_dataset
-from models.spacer import Spacer
+from models.utils import build_model
+
 
 def str2bool(v):
     return v.lower() in ('yes', 'y', 'true', 't')
@@ -35,45 +35,25 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu_list
    
     # Model loading
-    gpu_nums = len(FLAGS.gpu_list.split(','))
+    strategy = tf.distribute.MirroredStrategy()
+    gpu_nums = strategy.num_replicas_in_sync
+
     if gpu_nums > 1:
-        # Multi-GPU training.
-        mirrored_strategy = tf.distribute.MirroredStrategy()
-        with mirrored_strategy.scope():
-            model = Spacer(FLAGS.trained_model,
-                           config)
-            optimizer = optimizers.Adam(
-                    config.LEARNING_RATE,
-                    False)
-            model.compile(loss='binary_crossentropy',
-                  optimizer=optimizer,
-                  metrics=['accuracy',
-                           tf.metrics.Precision(),
-                           tf.metrics.Recall(),
-                           tf.metrics.AUC()])
+        # For multi-GPU training.
+        with strategy.scope():
+            model = build_model(FLAGS.trained_model, 
+                                config)
     else:
-        # Single GPU training.
-        model = Spacer(FLAGS.trained_model,
-                       config) 
-        optimizer = optimizers.Adam(
-                config.LEARNING_RATE,
-                False)
-        model.compile(loss='binary_crossentropy',
-                      optimizer=optimizer,
-                      metrics=['accuracy',
-                               tf.metrics.Precision(),
-                               tf.metrics.Recall(),
-                               tf.metrics.AUC()])
+        # For single GPU training.
+        model = build_model(FLAGS.trained_model, 
+                            config)
     model.summary()
 
     # Data preparation
     filenames = glob(os.path.join(FLAGS.data_path, '*.txt'))
-    shuffle(filenames)
+    train_filenames, val_filenames = train_test_split(filenames, 
+            test_size=FLAGS.validation_split)
 
-    validation_split = int(len(filenames) * FLAGS.validation_split)
-    val_filenames = filenames[:validation_split]
-    train_filenames =  filenames[validation_split:]
- 
     print('Found {} files.'.format(len(filenames)))
     print('Using {} files for training.'.format(len(train_filenames)))
 
@@ -82,15 +62,17 @@ if __name__ == '__main__':
     print('Preparing validation dataset.')
     X_val, y_val = build_dataset(val_filenames, config)
  
+    # Integrating with tf.data
     global_batch_size = config.BATCH_SIZE * gpu_nums
-    train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train))
-    train_dataset = train_dataset.batch(global_batch_size)
-    train_dataset = train_dataset.repeat()
+    train_steps = len(X_train) // global_batch_size
+    valid_steps = len(X_val) // global_batch_size
 
+    train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train))
+    train_dataset = train_dataset.batch(global_batch_size).repeat()
     valid_dataset = tf.data.Dataset.from_tensor_slices((X_val, y_val))
-    valid_dataset = valid_dataset.batch(global_batch_size)
-    valid_dataset = valid_dataset.repeat()
-    
+    valid_dataset = valid_dataset.batch(global_batch_size).repeat()  
+
+    # Model training.
     MODEL_SAVE_DIR = 'outputs/'
     if not os.path.exists(MODEL_SAVE_DIR):
         os.mkdir(MODEL_SAVE_DIR)
@@ -100,14 +82,14 @@ if __name__ == '__main__':
     
     checkpoint = ModelCheckpoint(filepath=model_path, 
                                  monitor='val_loss',
-                                 verbose=1,
                                  save_weights_only=True,
-                                 save_best_only=True)
+                                 save_best_only=True,
+                                 verbose=1)
 
     history = model.fit(train_dataset,
                         validation_data=valid_dataset,
+                        steps_per_epoch=train_steps,
+                        validation_steps=valid_steps,
                         epochs=config.EPOCHS,
-                        steps_per_epoch=len(X_train)//global_batch_size,
-                        validation_steps=len(X_val)//global_batch_size,
                         callbacks=[checkpoint],
                         verbose=1)
