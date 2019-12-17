@@ -1,11 +1,4 @@
-import re
-
-from random import shuffle
-from glob import glob
 from tqdm import tqdm
-
-import tensorflow as tf
-from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras import models
 from tensorflow.keras.preprocessing.sequence import pad_sequences
