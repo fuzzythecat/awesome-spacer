@@ -8,6 +8,7 @@ awesome-spacer is a project for automatic Korean word spacing, using **TensorFlo
 - `TensorFlow 2.0`
 - `NumPy`
 - `tqdm`
+- `scikit-learn`
 
 ## Train
 
