@@ -5,12 +5,13 @@ import tensorflow as tf
 
 from glob import glob
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import TensorBoard
 from sklearn.model_selection import train_test_split
 
 from models.config import Config
 from models.utils import build_dataset
 from models.utils import build_model
-
+from models.utils import TextHistory
 
 def str2bool(v):
     return v.lower() in ('yes', 'y', 'true', 't')
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     X_train, y_train = build_dataset(train_filenames, config) 
     print('Preparing validation dataset.')
     X_val, y_val = build_dataset(val_filenames, config)
- 
+
     # Integrating with tf.data
     global_batch_size = config.BATCH_SIZE * gpu_nums
     train_steps = len(X_train) // global_batch_size
@@ -79,17 +80,29 @@ if __name__ == '__main__':
 
     model_path = os.path.join(MODEL_SAVE_DIR,
             '{epoch:02d}-{val_loss:.4f}-{val_accuracy:.4f}.hdf5')
-    
+   
+    # Define callbacks.
     checkpoint = ModelCheckpoint(filepath=model_path, 
                                  monitor='val_loss',
                                  save_weights_only=True,
                                  save_best_only=True,
                                  verbose=1)
+    
+    tensorboard = TensorBoard(MODEL_SAVE_DIR,
+                              write_graph=True,
+                              update_freq=300)
+    
+    text_logger = TextHistory(X_val[0:5],
+                              config=config,
+                              log_dir=MODEL_SAVE_DIR)
+
+    callbacks = [checkpoint, tensorboard, text_logger]
+
 
     history = model.fit(train_dataset,
                         validation_data=valid_dataset,
                         steps_per_epoch=train_steps,
                         validation_steps=valid_steps,
                         epochs=config.EPOCHS,
-                        callbacks=[checkpoint],
+                        callbacks=callbacks,
                         verbose=1)
