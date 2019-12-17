@@ -10,6 +10,11 @@ awesome-spacer is a project for automatic Korean word spacing, using **TensorFlo
 - `tqdm`
 - `scikit-learn`
 
+## Getting Started
+* [awesome-spacer-train-colab.ipynb](notebooks/awesome-spacer-train-colab.ipynb): You can use this to train your own model on Sejong corpus with Google Colab. To train on custom datasets, try using CLI instead.  
+
+* [awesome-spacer-test-colab.ipynb](notebooks/awesome-spacer-test-colab.ipynb): You can use this to test pre-trained models trained on Sejong corpus. Weight links and corresponding model configurations are included in the notebook.
+
 ## Train
 
 To train the model, you should provide the path to your dataset.
