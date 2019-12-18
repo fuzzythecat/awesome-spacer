@@ -8,16 +8,15 @@ has approximately 200 characters to fit the default model configuration.
 When creating a custom dataset, we found that concatenating shorter sentences into a single line can help 
 reduce training time without hurting the performance.  
 
-50,000 lines were randomly selected from the corpus(152 characters per line) for training, 
-and the same lines were stretched to 100,000(76 characters per line) for comparison.  
+To demonstrate this, we randomly sampled 300 text files from the corpus for training(351,374 lines). 
+The same files were processed with the script(171,236 lines) for comparison. 
 
-![](../images/20191211_compare_preprocessing_performance.png)
+![](../images/20191218_compare_preprocessing_performance.jpg)
 
-Two models with the default configuration were trained on each dataset, and the former showed comparable 
-performance on separate validation set after 10 epochs as the latter, with just half the training time.  
+Two models with the default configuration were trained on each dataset, and the latter showed better 
+performance on separate validation set after 10 epochs as the former, with just half the training time.
 
 ## Usage
-
 ```
 python process.py --data_path path/to/dataset --max_text_len 200
 ```
