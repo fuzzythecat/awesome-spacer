@@ -33,6 +33,11 @@ python train.py --data_path path/to/dataset --gpu_list 0 --trained_model path/to
 python train.py --data_path path/to/dataset --gpu_list 0,1,2,3
 ```
 
+## Logging to TensorBoard
+
+The script is configured to log test results to TensorBoard along with losses, accuracy, etc. This way you can visually monitor model performances.
+![](images/20191218_tensorboard_logging.JPG)
+
 ## Examples
 
 See [Jupyter Notebook examples](notebooks/awesome-spacer-test-colab.ipynb) for usage. 
