@@ -16,5 +16,12 @@ and the same lines were stretched to 100,000(76 characters per line) for compari
 Two models with the default configuration were trained on each dataset, and the former showed comparable 
 performance on separate validation set after 10 epochs as the latter, with just half the training time.  
 
+## Usage
+
+```
+python process.py --data_path path/to/dataset --max_text_len 200
+```
+* **Note**: the script overwrites file contents. 
+
 ## Credits
-Thanks to [EthanJYK](https://github.com/EthanJYK) for processing the dataset. 
+Thanks to [EthanJYK](https://github.com/EthanJYK) for processing the dataset.
