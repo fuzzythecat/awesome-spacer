@@ -5,7 +5,7 @@ Dataset provided is processed so that every line
 has approximately 200 characters to fit the default model configuration. 
 
 ## Quick notes on the dataset
-When creating a custom dataset, concatenating shorter sentences into a single line can help 
+When creating a custom dataset, we found that concatenating shorter sentences into a single line can help 
 reduce training time without hurting the performance.  
 
 50,000 lines were randomly selected from the corpus(152 characters per line) for training, 
