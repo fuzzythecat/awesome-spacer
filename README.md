@@ -32,3 +32,6 @@ python train.py --data_path path/to/dataset --gpu_list 0 --trained_model path/to
 # Pass GPU ids for multi-GPU training.
 python train.py --data_path path/to/dataset --gpu_list 0,1,2,3
 ```
+
+## Workshop Materials
+* Hands-on Workshop @ [2019 Global AI Bootcamp - Seoul](https://festa.io/events/772)
