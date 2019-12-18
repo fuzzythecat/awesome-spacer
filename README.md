@@ -63,4 +63,4 @@ See [Jupyter Notebook examples](notebooks/awesome-spacer-test-colab.ipynb) for u
 ```
 
 ## Workshop Materials
-* Hands-on Workshop @ [2019 Global AI Bootcamp - Seoul](https://festa.io/events/772)
+* Hands-on Workshop @ [2019 Global AI Bootcamp - Seoul](https://festa.io/events/772) : [Link](https://drive.google.com/file/d/1j0XK1MONE7qx4Y2U17Il9kYX8CHBCKeN/view?usp=sharing)
